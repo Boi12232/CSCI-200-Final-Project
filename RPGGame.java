@@ -6,14 +6,15 @@ public class RPGGame
   
   private Graph<Location> worldGraph;
   private Map<String, Location> locations = new HashMap<>();
+  private Map<Location, List<String>> pendingNeighbors = new HashMap<>();
   private Location currentLocation;
   private Scanner scanner = new Scanner(System.in);
-  
-  
+
   public RPGGame() 
   {
     worldGraph = new Graph<>(false);
     initializeWorldFromFile("locations.txt");
+    currentLocation = locations.get("Village");
   }
   
   /**
@@ -21,47 +22,52 @@ public class RPGGame
    */
   private void initializeWorldFromFile(String filename) 
   {
-    try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+    try (BufferedReader br = new BufferedReader(new FileReader(filename))) 
+    {
       String line;
+      // -------- PASS 1: create locations --------
       while ((line = br.readLine()) != null) 
       {
         String[] data = line.split(",");
-        
-        //Skip lines that don't have enough data
         if (data.length < 5) continue;
         
-        //Parse the Location attributes
         String name = data[0].trim();
         int encounterChance = Integer.parseInt(data[1].trim());
         int fleeInfluence = Integer.parseInt(data[2].trim());
         String description = data[3].trim();
         
-        //Create the Location object
-        Location location = new Location(name, encounterChance, fleeInfluence, description);
+        Location loc = new Location(name, encounterChance, fleeInfluence, description);
         
-        //Add to locations map
-        locations.put(name, location);
+        locations.put(name, loc);
+        worldGraph.addVertex(loc);
         
-        //Add to the graph
-        worldGraph.addVertex(location);
-        
-        //Add edges based on neighboring locations
-        for (int i = 4; i < data.length; i++) {
-          String neighborName = data[i].trim();
-          Location neighbor = locations.get(neighborName);
-          
-          //If the neighbor isn't found in the map yet, continue
-          if (neighbor == null) continue;
-          
-          //Calculate the difficulty (this can be adjusted based on your game's needs)
-          double difficulty = calculateDifficulty(location, neighbor);
-          
-          //Add an edge from this location to the neighbor
-          worldGraph.addEdge(location, neighbor, difficulty);
+        //Store neighbor names for pass 2
+        List<String> neighborNames = new ArrayList<>();
+        for (int i = 4; i < data.length; i++) 
+        {
+          neighborNames.add(data[i].trim());
+        }
+        pendingNeighbors.put(loc, neighborNames);
+      }
+    } 
+    catch (IOException e) 
+    {
+      System.out.println("Error reading the file: " + e.getMessage());
+    }
+    
+    // -------- PASS 2: connect edges --------
+    for (Map.Entry<Location, List<String>> entry : pendingNeighbors.entrySet()) 
+    {
+      Location loc = entry.getKey();
+      for (String neighborName : entry.getValue()) 
+      {
+        Location neighbor = locations.get(neighborName);
+        if (neighbor != null) 
+        {
+          double difficulty = calculateDifficulty(loc, neighbor);
+          worldGraph.addEdge(loc, neighbor, difficulty);
         }
       }
-    } catch (IOException e) {
-      System.out.println("Error reading the file: " + e.getMessage());
     }
   }
   
@@ -76,6 +82,7 @@ public class RPGGame
     return result;
   }
   
+  //Method to calculate the difficulty between two nodes to assign as edge weight
   private double calculateDifficulty(Location from, Location to) 
   {
     //For now, return a random difficulty between 0 and 10
