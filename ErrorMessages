@@ -1,0 +1,25 @@
+import java.util.*;
+import java.io.*;
+
+public class ErrorMessages
+{ 
+  public static List<String> loadMessages() throws IOException
+  {
+    List<String> errorMessages = new ArrayList<String>();
+    BufferedReader reader = new BufferedReader(new FileReader("invalidinputmessages.txt"));
+    String line;
+    
+    while((line = reader.readLine()) != null)
+    {
+      errorMessages.add(line.trim());
+    }
+    reader.close();
+    return errorMessages;
+  }
+  
+  public static String getRandomMessage(List<String> messages)
+  {
+    Random random = new Random();
+    return messages.get(random.nextInt(messages.size()));
+  }
+}
