@@ -9,3 +9,4 @@ Coast,30,3,A windy coastline with a view of the ocean.,Forest,Plains,Desert
 Mountains,50,8,Dangerous rocky peaks and deep jagged ravines.,Tundra
 Town,0,0,A bustling town of the province,Forest,Scorched Forest,Village
 Village,0,0,A quaint and warm village that reminds you of home.,Forest,Scorched Forest,Town
+ 
