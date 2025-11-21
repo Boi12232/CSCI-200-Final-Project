@@ -1,10 +1,11 @@
 Forest,40,3,A lush and vibrant forest.,Plains,Jungle,Coast,Town,Village
 Scorched Forest,5,1,A previously lush forest now burned to ash.,Plains,Jungle,Coast,Town,Village
 Plains,10,1,Flat grasslands as far as the eye can see.,Forest,Desert,Coast
-Desert, 20,1,A vast, scorching hot desert.,Plains,Coast,Oasis
+Desert,20,1,A vast and scorching hot desert.,Plains,Coast,Oasis
+Oasis,20,1,A tiny oasis in the middle of the sands.,Desert
 Jungle,70,8,A dense world of green and humidity.,Forest
 Tundra,20,3,A frozen wasteland of nothing but hollowness.,Mountains
 Coast,30,3,A windy coastline with a view of the ocean.,Forest,Plains,Desert
 Mountains,50,8,Dangerous rocky peaks and deep jagged ravines.,Tundra
-Town,0,0,A bustling town of the province,Forest,Plains,Village
-Village,0,0,A quaint, warm village that reminds you of home.,Town,Forest,Scorched Forest
+Town,0,0,A bustling town of the province,Forest,Scorched Forest,Village
+Village,0,0,A quaint and warm village that reminds you of home.,Forest,Scorched Forest,Town
