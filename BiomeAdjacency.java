@@ -12,7 +12,7 @@ public class BiomeAdjacency {
         adjacencyRules.put("Desert", new HashSet<>(Arrays.asList("Plains", "Coast", "Oasis")));
         adjacencyRules.put("Oasis", new HashSet<>(Arrays.asList("Desert")));
         adjacencyRules.put("Jungle", new HashSet<>(Arrays.asList("Forest")));
-        adjacencyRules.put("Tundra", new HashSet<>(Arrays.asList("Mountains"));
+        adjacencyRules.put("Tundra", new HashSet<>(Arrays.asList("Mountains")));
         adjacencyRules.put("Coast", new HashSet<>(Arrays.asList("Forest", "Plains", "Desert")));
         adjacencyRules.put("Mountains", new HashSet<>(Arrays.asList("Tundra")));
         adjacencyRules.put("Town", new HashSet<>(Arrays.asList("Forest", "Scorched Forest", "Village")));
