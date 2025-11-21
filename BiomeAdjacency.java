@@ -6,16 +6,17 @@ public class BiomeAdjacency {
 
     static
     {
-        adjacencyRules.put("Forest", new HashSet<>(Arrays.asList("Plains", "Jungle", "Coast", "Mountains")));
-        adjacencyRules.put("Plains", new HashSet<>(Arrays.asList("Forest", "Desert", "Coast", "Tundra")));
+        adjacencyRules.put("Forest", new HashSet<>(Arrays.asList("Plains", "Jungle", "Coast", "Town", "Village")));
+        adjacencyRules.put("Scorched Forest", new HashSet<>(Arrays.asList("Plains", "Jungle", "Coast", "Town", "Village")));
+        adjacencyRules.put("Plains", new HashSet<>(Arrays.asList("Forest", "Desert", "Coast")));
         adjacencyRules.put("Desert", new HashSet<>(Arrays.asList("Plains", "Coast", "Oasis")));
-        adjacencyRules.put("Jungle", new HashSet<>(Arrays.asList("Forest", "Ruins")));
-        adjacencyRules.put("Coast", new HashSet<>(Arrays.asList("Forest", "Plains", "Desert", "Village")));
-        adjacencyRules.put("Tundra", new HashSet<>(Arrays.asList("Mountains", "Plains", "Ruins")));
-        adjacencyRules.put("Mountains", new HashSet<>(Arrays.asList("Forest", "Tundra", "Ruins")));
-        adjacencyRules.put("Ruins", new HashSet<>(Arrays.asList("Jungle", "Mountains", "Tundra")));
         adjacencyRules.put("Oasis", new HashSet<>(Arrays.asList("Desert")));
-        adjacencyRules.put("Village", new HashSet<>(Arrays.asList("Coast", "Forest")));
+        adjacencyRules.put("Jungle", new HashSet<>(Arrays.asList("Forest")));
+        adjacencyRules.put("Tundra", new HashSet<>(Arrays.asList("Mountains"));
+        adjacencyRules.put("Coast", new HashSet<>(Arrays.asList("Forest", "Plains", "Desert")));
+        adjacencyRules.put("Mountains", new HashSet<>(Arrays.asList("Tundra")));
+        adjacencyRules.put("Town", new HashSet<>(Arrays.asList("Forest", "Scorched Forest", "Village")));
+        adjacencyRules.put("Village", new HashSet<>(Arrays.asList("Forest", "Scorched Forest", "Town")));
     }
 
     //Check if two biomes can be neighbors
