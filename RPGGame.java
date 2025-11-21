@@ -3,7 +3,6 @@ import java.io.*;
 
 public class RPGGame 
 {
-  
   private Graph<Location> worldGraph;
   private Map<String, Location> locations = new HashMap<>();
   private Map<Location, List<String>> pendingNeighbors = new HashMap<>();
@@ -94,6 +93,7 @@ public class RPGGame
    */
   public void startGame() 
   {
+    int invalidChoiceCount = 0;
     while (true) 
     {
       System.out.println("\nYou are at: " + currentLocation.getName());
@@ -112,6 +112,7 @@ public class RPGGame
       if (choice < 1 || choice > neighbors.size()) 
       {
         System.out.println("Invalid choice.");
+        invalidChoiceCount++;
         continue;
       }
       
