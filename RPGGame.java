@@ -1,78 +1,109 @@
 import java.util.*;
+import java.io.*;
 
-public class RPGGame {
+public class RPGGame 
+{
   
   private Graph<Location> worldGraph;
   private Map<String, Location> locations = new HashMap<>();
   private Location currentLocation;
   private Scanner scanner = new Scanner(System.in);
   
-  public RPGGame() {
+  
+  public RPGGame() 
+  {
     worldGraph = new Graph<>(false);
-    initializeWorld();
+    initializeWorldFromFile("locations.txt");
   }
   
   /**
    * Method to initialize the world graph
    */
-  private void initializeWorld() {
-    //Change these into being read from a file later for ease of change
-    Location forest   = new Location("Forest", 30, 5, "A lush forest full of trees.");
-    Location desert   = new Location("Desert", 50, 10, "A scorching desert.");
-    Location tundra   = new Location("Tundra", 40, 8, "A frozen wasteland.");
-    Location coast    = new Location("Coast", 20, 2, "A windy coastline.");
-    Location mountains = new Location("Mountains", 60, 15, "Dangerous rocky peaks.");
-    
-    //Store in Map
-    locations.put(forest.getName(), forest);
-    locations.put(desert.getName(), desert);
-    locations.put(tundra.getName(), tundra);
-    locations.put(coast.getName(), coast);
-    locations.put(mountains.getName(), mountains);
-    
-    //Add nodes for each
-    for (Location loc : locations.values()) {
-      worldGraph.addVertex(loc);
+  private void initializeWorldFromFile(String filename) 
+  {
+    try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+      String line;
+      while ((line = br.readLine()) != null) 
+      {
+        String[] data = line.split(",");
+        
+        //Skip lines that don't have enough data
+        if (data.length < 5) continue;
+        
+        //Parse the Location attributes
+        String name = data[0].trim();
+        int encounterChance = Integer.parseInt(data[1].trim());
+        int fleeInfluence = Integer.parseInt(data[2].trim());
+        String description = data[3].trim();
+        
+        //Create the Location object
+        Location location = new Location(name, encounterChance, fleeInfluence, description);
+        
+        //Add to locations map
+        locations.put(name, location);
+        
+        //Add to the graph
+        worldGraph.addVertex(location);
+        
+        //Add edges based on neighboring locations
+        for (int i = 4; i < data.length; i++) {
+          String neighborName = data[i].trim();
+          Location neighbor = locations.get(neighborName);
+          
+          //If the neighbor isn't found in the map yet, continue
+          if (neighbor == null) continue;
+          
+          //Calculate the difficulty (this can be adjusted based on your game's needs)
+          double difficulty = calculateDifficulty(location, neighbor);
+          
+          //Add an edge from this location to the neighbor
+          worldGraph.addEdge(location, neighbor, difficulty);
+        }
+      }
+    } catch (IOException e) {
+      System.out.println("Error reading the file: " + e.getMessage());
     }
-    
-    //Add edges
-    worldGraph.addEdge(forest, desert, 4.0);
-    worldGraph.addEdge(forest, coast, 2.0);
-    worldGraph.addEdge(desert, coast, 3.5);
-    worldGraph.addEdge(forest, mountains, 6.0);
-    worldGraph.addEdge(tundra, mountains, 5.0);
-    
-    //Start location
-    currentLocation = forest;
   }
   
   //Get neighbors directly from the graph
-  private List<Location> getNeighborLocations(Location loc) {
+  private List<Location> getNeighborLocations(Location loc) 
+  {
     List<Location> result = new ArrayList<>();
-    for (Graph<Location>.Edge e : worldGraph.getNeighbors(loc)) {
+    for (Graph<Location>.Edge e : worldGraph.getNeighbors(loc)) 
+    {
       result.add(e.destination);
     }
     return result;
   }
   
+  private double calculateDifficulty(Location from, Location to) 
+  {
+    //For now, return a random difficulty between 0 and 10
+    return Math.random() * 10;
+  }
+
   /**
    * Game loop
    */
-  public void startGame() {
-    while (true) {
+  public void startGame() 
+  {
+    while (true) 
+    {
       System.out.println("\nYou are at: " + currentLocation.getName());
       System.out.println("Possible paths:");
       
       List<Location> neighbors = getNeighborLocations(currentLocation);
       
-      for (int i = 0; i < neighbors.size(); i++) {
+      for (int i = 0; i < neighbors.size(); i++) 
+      {
         System.out.println((i + 1) + ". " + neighbors.get(i).getName());
       }
       
       System.out.print("Choose destination (number): ");
       int choice = scanner.nextInt();
       
-      if (choice < 1 || choice > neighbors.size()) {
+      if (choice < 1 || choice > neighbors.size()) 
+      {
         System.out.println("Invalid choice.");
         continue;
       }
