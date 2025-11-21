@@ -77,7 +77,8 @@ public class Location {
    * Equals method
    */
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(Object o) 
+  {
     if (!(o instanceof Location)) return false;
     return name.equals(((Location)o).name);
   }
@@ -85,14 +86,16 @@ public class Location {
    * Hash code
    */
   @Override
-  public int hashCode() {
+  public int hashCode() 
+  {
     return name.hashCode();
   }
   /**
    * To string
    */
   @Override
-  public String toString() {
+  public String toString() 
+  {
     return name;
   }
 }
