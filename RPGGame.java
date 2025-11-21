@@ -8,6 +8,7 @@ public class RPGGame
   private Map<Location, List<String>> pendingNeighbors = new HashMap<>();
   private Location currentLocation;
   private Scanner scanner = new Scanner(System.in);
+  private ErrorMessages errorMessages = new ErrorMessages();
 
   public RPGGame() 
   {
@@ -91,8 +92,9 @@ public class RPGGame
   /**
    * Game loop
    */
-  public void startGame() 
+  public void startGame() throws IOException
   {
+    List<String> messages = errorMessages.loadMessages();
     int invalidChoiceCount = 0;
     while (true) 
     {
@@ -111,7 +113,7 @@ public class RPGGame
       
       if (choice < 1 || choice > neighbors.size()) 
       {
-        System.out.println("Invalid choice.");
+        System.out.println(errorMessages.getRandomMessage(messages));
         invalidChoiceCount++;
         continue;
       }
@@ -121,3 +123,4 @@ public class RPGGame
     }
   }
 }
+
