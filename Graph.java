@@ -1,5 +1,10 @@
+/**
+ * 
+ *
+ */
+
 import java.util.*;
-public class Graph<T> {
+public class Graph<T>{
   
 //----------------------- Inner edge class -----------------------
   class Edge {
@@ -67,11 +72,40 @@ public class Graph<T> {
   }
   
   /**
+   * Removes an an edge to a specific Location
+   * @param loc represents the location that has an edge to the location we want to remove
+   * @param removedLoc represents the location that will be removed
+   */
+  public void removeEdge(T loc , T removedLoc){
+    Set<Edge> setOfEdgesInLoc= adj.get(loc);
+    
+    for(Edge edge : setOfEdgesInLoc)
+    {
+      
+      if(edge.destination.equals(removedLoc)){
+        setOfEdgesInLoc.remove(edge);
+      }
+      
+    }
+  }
+  
+  /**
+   * Removes a vertex from graph
+   * @param loc 
+   */
+  public void removeVertex(T removedVertex){
+    adj.remove(removedVertex);
+    System.out.println("1, " + adj);
+  }
+  
+  
+  
+  /**
    * Method to get node neighbors
    */
   public Set<Edge> getNeighbors(T v) {
     //Check if this vertex exists in the map
-    Set<Edge> neighbors = adj.get(v);
+    Set<Edge> neighbors = adj.get(v); //gets the edges that key v is connected to
     if (neighbors == null) {
       neighbors = new HashSet<>();//empty set
     }
