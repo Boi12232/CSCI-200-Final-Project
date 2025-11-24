@@ -1,20 +1,20 @@
 import java.util.*;
 
-public class Location {
+public class Location{
   //Attributes
   private String name;
   private int encounterChance;
   private int fleeInfluence;
   private String description;
-  private List<String> enemies = new ArrayList<>();
+  protected List<Enemy> enemies = new ArrayList<>();
   private List<String> items = new ArrayList<>();
   
   /**
    * Constructor for the Location
-   * @param name
-   * @param encounterChance
-   * @param fleeInfluence
-   * @param description
+   * @param name represents the name of the location
+   * @param encounterChance represents an int for the chances of encountering an enemy
+   * @param fleeInfluence is used to find the possibility for fleeing from this particular enemy
+   * @param description represents the description of the enemy
    */
   public Location(String name, int encounterChance, int fleeInfluence, String description) 
   {
@@ -22,6 +22,19 @@ public class Location {
     this.encounterChance = encounterChance;
     this.fleeInfluence = fleeInfluence;
     this.description = description;
+  }
+  
+  /**
+   * Constructor for creating a shelter location
+   * @param name represents the shelter name
+   */
+  public Location(String name){
+    this.name = name;
+    this.encounterChance = 0;
+    this.fleeInfluence = 0;
+    this.description = "Shelter";
+    
+    
   }
   
   /**
@@ -60,7 +73,7 @@ public class Location {
    * Enemies getter
    * @return a list of the location's enemies
    */
-  public List<String> getEnemies() 
+  public List<Enemy> getEnemies() 
   { 
     return enemies; 
   }
@@ -98,4 +111,16 @@ public class Location {
   {
     return name;
   }
+  
+//  @Override
+//  public int compareTo(T otherLocation){
+//    Location other = (Location)otherLocation;
+//    if(this.name ==  other.getName()){
+//    return 0;
+//    }
+//    else{
+//    return 1;
+//    }
+//  }
+  
 }
