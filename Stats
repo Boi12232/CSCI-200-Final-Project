@@ -1,0 +1,164 @@
+/*
+ * Name: Shamin Fazal
+ * Date: 4/13/25
+ * Description: Stats class for the game
+ * 
+ * edited by Mai Ke 11/23/2025
+ */
+
+import java.util.*;
+
+public class Stats 
+{
+  //Stat Attributes
+  private Scanner input = new Scanner(System.in);
+  private String name = getPlayerName(input);
+  private int health;
+  private int maxHealth;
+  private int attack;
+  private int defense;
+  protected int energy;
+  
+  /**
+   * Gets player name
+   * @return name is the player's name
+   */
+  public String getPlayerName(Scanner input)
+  {
+    String name;
+    
+    System.out.println("What's your name, Traveler?");
+    name = input.next();
+    
+    return name;
+  }
+  
+  /**
+   * Constructor for stat values
+   */
+  public Stats(int health, int maxHealth, int attack, int defense, int energy)
+  {
+    this.health = health;
+    this.maxHealth = maxHealth;
+    this.attack = attack;
+    this.defense = defense;
+    this.energy = energy;
+  }
+  
+  //Getters for the values 
+  
+  /**
+   * Gets name
+   * @return name is player's name
+   */
+  public String getName()
+  {
+    return name;
+  }
+  
+  /**
+   * returns player health
+   * @return health player's health
+   */
+  public int getHealth()
+  {
+    return health;
+  }
+  /**
+   * gets max health
+   * @return maxHealth player's max health
+   */
+  public int getMaxHealth()
+  {
+    return maxHealth;
+  }
+  /**
+   * gets attack
+   * @return attack player's attack
+   */
+  public int getAttack()
+  {
+    return attack;
+  }
+  /**
+   * gets defense
+   * @return defense player's defense
+   */
+  public int getDefense()
+  {
+    return defense;
+  }
+  
+  /**
+   * gets energy value
+   * @return int of the player's energy level
+   */
+  
+  public int getEnergy(){
+    return this.energy;
+  }
+  
+  //Adders for the values
+  /**
+   * increases the player's health
+   * @param addedHealth is the amount being added
+   */
+  public void increaseHealth(int addedHealth)
+  {
+    health += addedHealth;
+  }
+  /**
+   * incraeses max health
+   * @param addedHealth is the amount being added
+   */
+  public void increaseMaxHealth(int addedHealth)
+  {
+    maxHealth += addedHealth;
+  }
+  /**
+   * increases attack
+   * @param addedAttack is the amount being added
+   */ 
+  public void increaseAttack(int addedAttack)
+  {
+    attack += addedAttack;
+  }
+  /**
+   * increases defense
+   * @param addedDefense is the amount being added
+   */
+  public void increaseDefense(int addedDefense)
+  {
+    defense += addedDefense;
+  }
+  
+  //Combat relevant setter
+  
+  /**
+   * Sets the player's health
+   * @param newHealth is the new health
+   */
+  public void setHealth(int newHealth)
+  {
+    health = newHealth;
+  }
+  
+  /**
+   * Sets the player's energy level
+   * @param newEnergy represents the new/altered energy status of the player
+   */
+  public void setEnergy(int newEnergy)
+  {
+    energy = newEnergy;
+  }
+  
+  //ToString
+  /**
+   * Converts the stats to a String
+   * @return String is the player's stats as a String
+   */
+  public String toString()
+  {
+    return "----------" + "\nHealth: " + health + "/" + maxHealth + "\nAttack: " + attack + "\nDefense: " + defense + "\n";
+  }
+}
