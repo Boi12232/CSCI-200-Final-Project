@@ -9,7 +9,7 @@ public class RPGGame
   private Location currentLocation;
   private Scanner scanner = new Scanner(System.in);
   private ErrorMessages errorMessages = new ErrorMessages();
-
+  
   public RPGGame() 
   {
     worldGraph = new Graph<>(false);
@@ -25,48 +25,60 @@ public class RPGGame
     try (BufferedReader br = new BufferedReader(new FileReader(filename))) 
     {
       String line;
-      // -------- PASS 1: create locations --------
+      //PASS 1: Create all locations
       while ((line = br.readLine()) != null) 
       {
         String[] data = line.split(",");
-        if (data.length < 5) continue;
+        
+        if (data.length < 6) 
+          continue;
         
         String name = data[0].trim();
-        int encounterChance = Integer.parseInt(data[1].trim());
-        int fleeInfluence = Integer.parseInt(data[2].trim());
-        String description = data[3].trim();
+        Biome biome = Biome.valueOf(data[1].trim().toUpperCase());
+        int encounterChance = Integer.parseInt(data[2].trim());
+        int fleeInfluence = Integer.parseInt(data[3].trim());
+        String description = data[4].trim();
         
-        Location loc = new Location(name, encounterChance, fleeInfluence, description);
-        
+        Location loc = new Location(name, encounterChance, fleeInfluence, description, biome);
         locations.put(name, loc);
         worldGraph.addVertex(loc);
         
         //Store neighbor names for pass 2
         List<String> neighborNames = new ArrayList<>();
-        for (int i = 4; i < data.length; i++) 
-        {
+        for (int i = 5; i < data.length; i++)
           neighborNames.add(data[i].trim());
-        }
+  
         pendingNeighbors.put(loc, neighborNames);
       }
     } 
     catch (IOException e) 
     {
-      System.out.println("Error reading the file: " + e.getMessage());
+      System.out.println("Error reading file: " + e.getMessage());
     }
     
-    // -------- PASS 2: connect edges --------
+    //PASS 2: Connect edges with biome adjacency validation
     for (Map.Entry<Location, List<String>> entry : pendingNeighbors.entrySet()) 
     {
       Location loc = entry.getKey();
       for (String neighborName : entry.getValue()) 
       {
         Location neighbor = locations.get(neighborName);
-        if (neighbor != null) 
-        {
-          double difficulty = calculateDifficulty(loc, neighbor);
-          worldGraph.addEdge(loc, neighbor, difficulty);
+        if (neighbor == null) 
+          continue;
+        
+        Biome a = loc.getBiome();
+        Biome b = neighbor.getBiome();
+        
+        //----BIOME VALIDATION----
+        if (!a.canNeighbor(b)) {
+          System.out.println("WARNING: Invalid biome adjacency: "
+                               + loc.getName() + "(" + a + ") → "
+                               + neighbor.getName() + "(" + b + ")");
+          
+          continue; //skip invalid connection
         }
+        double difficulty = calculateDifficulty(loc, neighbor);
+        worldGraph.addEdge(loc, neighbor, difficulty);
       }
     }
   }
@@ -88,7 +100,7 @@ public class RPGGame
     //For now, return a random difficulty between 0 and 10
     return Math.random() * 10;
   }
-
+  
   /**
    * Game loop
    */
@@ -123,4 +135,3 @@ public class RPGGame
     }
   }
 }
-
