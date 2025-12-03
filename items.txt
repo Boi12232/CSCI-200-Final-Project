@@ -1,0 +1,5 @@
+Health Potion,40,HEALTH
+Attack Potion,20,ATTACK
+Defense Potion,20,DEFENSE
+
+God Potion,50,25,25,HEALTH|ATTACK|DEFENSE

@@ -1,0 +1,5 @@
+ENEMY
+
+Slime,6,1,1,Forest|Plains|
+Mummy,10,2,2,Desert
+
