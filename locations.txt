@@ -1,11 +1,29 @@
-Forest,FOREST,40,3,A lush and vibrant forest.,Plains,Jungle,Coast,Town,Village
-Scorched Forest,SCORCHED_FOREST,5,1,A previously lush forest now burned to ash.,Plains,Jungle,Coast,Town,Village
-Plains,PLAINS,10,1,Flat grasslands as far as the eye can see.,Forest,Desert,Coast
-Desert,DESERT,20,1,A vast and scorching hot desert.,Plains,Coast,Oasis
-Oasis,OASIS,20,1,A tiny oasis.,Desert
-Jungle,JUNGLE,70,8,A dense world of green.,Forest
-Tundra,TUNDRA,20,3,A frozen wasteland.,Mountains
-Coast,COAST,30,3,A windy coastline.,Forest,Plains,Desert
-Mountains,MOUNTAINS,50,8,Rugged peaks.,Tundra
-Town,TOWN,0,0,A bustling town.,Forest,Scorched Forest,Village
-Village,VILLAGE,0,0,A warm village.,Forest,Scorched Forest,Town
+BIOME,Forest,20,3
+REGION,Forest,Forest Outskirts,true
+REGION,Forest,Forest Center,false
+REGION,Forest,Clearing,false
+REGION,Forest,Logged Area,false
+
+BIOME,Swamp,30,1
+REGION,Swamp,Swamp Outskirts,true
+REGION,Swamp,Swamp Pond,false
+REGION,Swamp,Viney Area,false
+
+BIOME,Plains,10,2
+REGION,Plains,Plains Outskirts,true
+REGION,Plains,Small Grove,false
+REGION,Plains,Camp,false
+
+BIOME,Village,0,0
+REGION,Village,Village,true
+
+CONNECT,Forest Outskirts,Forest Center|Clearing|Logged Area|Swamp Outskirts|Plains Outskirts|Village
+CONNECT,Village,Forest Outskirts|Clearing|Logged Area|Forest Center
+CONNECT,Forest Center,Forest Outskirts|Clearing|Logged Area|Village
+CONNECT,Clearing,Forest Outskirts|Village|Forest Center|Logged Area
+
+CONNECT,Swamp Outskirts,Swamp Pond|Viney Area|Forest Outskirts|Plains Outskirts
+CONNECT,Swamp Pond,Swamp Outskirts|Viney Area
+CONNECT Viney Area,Swamp Outskirts|Swamp Pond
+
+CONNECT,Plains Outskirts,Forest Outskirts|Swamp Outskirts
