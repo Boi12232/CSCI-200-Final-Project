@@ -6,8 +6,6 @@ public class Location
   private int encounterChance;
   private int fleeInfluence;
   private String description;
-  private List<String> enemies = new ArrayList<>();
-  private List<String> items = new ArrayList<>();
   private Biome biome;
   
   public Location(String name, int encounterChance, int fleeInfluence, String description, Biome biome) 
@@ -27,6 +25,10 @@ public class Location
   public Biome getBiome() 
   { 
     return biome; 
+  }
+  
+  public int getEncounterChance() {
+    return encounterChance;
   }
   
   @Override
