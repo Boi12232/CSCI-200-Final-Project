@@ -88,7 +88,7 @@ public class FileLoader
     }
   }
   
-  public static void loadItems(String filename, List<Item> allItems) throws IOException 
+  public static void loadItems(String filename, Map<String, Biome> biomes, List<Item> allItems) throws IOException 
   {
     try (BufferedReader br = new BufferedReader(new FileReader(filename))) 
     {
@@ -102,29 +102,12 @@ public class FileLoader
         
         String name = parts[0].trim();
         
-        //Determine if it's a special item (multiple values/types) or regular
-        if (parts.length == 3) 
-        {
-          //Regular item: Name, Value, Type
-          int value = Integer.parseInt(parts[1].trim());
-          String type = parts[2].trim();
-          Item item = new Item(name, value, type);
-          allItems.add(item);
-        } 
-        else if (parts.length == 5) 
-        {
-          //Special item: Name, Value1, Value2, Value3, Type1|Type2|Type3
-          int value1 = Integer.parseInt(parts[1].trim());
-          int value2 = Integer.parseInt(parts[2].trim());
-          int value3 = Integer.parseInt(parts[3].trim());
-          String[] types = parts[4].split("\\|");
-          
-          //Create special item and store multiple values/types
-          int[] valueArr = new int[]{value1, value2, value3};
-          Item item = new Item(name, valueArr, types);
-          allItems.add(item);
-        }
-      }
+        //Regular item: Name, Value, Type
+        int value = Integer.parseInt(parts[1].trim());
+        String type = parts[2].trim();
+        Item item = new Item(name, value, type);
+        allItems.add(item); 
+      } 
     }
   }
 }
