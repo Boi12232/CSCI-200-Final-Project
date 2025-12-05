@@ -1,5 +1,45 @@
-Health Potion,40,HEALTH
-Attack Potion,20,ATTACK
-Defense Potion,20,DEFENSE
-
-God Potion,50,25,25,HEALTH|ATTACK|DEFENSE
+Small Health Potion,10,HEALTH
+Medium Health Potion,25,HEALTH
+Greater Health Potion,50,HEALTH
+Superior Health Potion,75,HEALTH
+Mega Health Potion,100,HEALTH
+Elixir of Vitality,150,HEALTH
+Recovery Brew,30,HEALTH
+Forest Remedy,20,HEALTH
+Bandages,8,HEALTH
+Herbal Salve,15,HEALTH
+Healing Roots,12,HEALTH
+Sacred Water,60,HEALTH
+Life Crystal,120,HEALTH
+Revitalizing Tonic,40,HEALTH
+Vitality Vial,70,HEALTH
+Small Attack Potion,5,ATTACK
+Warrior Brew,10,ATTACK
+Ferocity Elixir,15,ATTACK
+Battle Tincture,20,ATTACK
+Berserker Tonic,25,ATTACK
+Sharpening Stone,8,ATTACK
+Rage Draught,18,ATTACK
+Savage Essence,30,ATTACK
+Bloodroot Extract,12,ATTACK
+Crimson Powder,6,ATTACK
+War Banner Token,22,ATTACK
+Raging Spirit Flask,28,ATTACK
+Horn of the Wolf,35,ATTACK
+Blade Oil,14,ATTACK
+Lionheart Brew,40,ATTACK
+Small Defense Potion,5,DEFENSE
+Iron Draft,10,DEFENSE
+Reinforcement Salve,15,DEFENSE
+Guardian Elixir,20,DEFENSE
+Lesser Barrier Stone,7,DEFENSE
+Greater Barrier Stone,14,DEFENSE
+Stone Skin Brew,25,DEFENSE
+Armor Polish,12,DEFENSE
+Protective Ash,18,DEFENSE
+Ward Token,30,DEFENSE
+Defender’s Resolve,35,DEFENSE
+Bulwark Flask,28,DEFENSE
+Calcified Shard,40,DEFENSE
+Turtle Shell Tonic,22,DEFENSE
+Titan Essence,50,DEFENSE
