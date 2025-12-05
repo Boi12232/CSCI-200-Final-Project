@@ -29,51 +29,64 @@ public class Combat {
   {
     System.out.println("Battle starts!\n" + player.getName() + " vs " + enemy.getName());
     
-    while (player.isAlive() && enemy.isAlive())
+    while (player.isAlive() && enemy.isAlive()) 
     {
+      System.out.println(enemy.getName() + ": " + enemy.getHealth() + " HP");
+      System.out.println(player.getName() + ": " + player.getHP() + " HP");
+      
       System.out.println("\nChoose action: \n1. Attack\n2. Flee\n3. Inventory");
       String action = input.nextLine();
-      boolean playerAttacked = false;
+      boolean turnConsumed = false; //Track if player used a turn
       
       switch (action) 
       {
         case "1":
           playerAttack();
-          playerAttacked = true;
+          turnConsumed = true;
           break;
+          
         case "2":
           if (flee()) 
-          return player.getHP();
-          else
-            break;
+        {
+          return player.getHP(); //Successful flee ends combat
+        } 
+          else 
+          {
+            System.out.println("You wasted your turn trying to flee!");
+            turnConsumed = true; //Failed flee consumes a turn
+          }
+          break;
+          
         case "3":
           System.out.println("\nAccessing inventory...");
-          inventory.showInventory(player);
-          continue;
+          inventory.showInventory(player); //Inventory usage doesn't consume turn
+          continue; //Retry action selection
+          
         default:
           System.out.println("Invalid option.");
-          continue;
+          continue; //Retry action selection
       }
       
-      // Enemy performs a turn
-      if (enemy.isAlive())
+      //Only enemy attacks if the player consumed a turn
+      if (turnConsumed && enemy.isAlive()) 
       {
         enemyAttack();
       }
       
       //Win/Loss Check
-      if (!player.isAlive())
+      if (!player.isAlive()) 
       {
         System.out.println(player.getName() + " has been defeated.");
-      }
-      else if (!enemy.isAlive())
+        break;
+      } 
+      else if (!enemy.isAlive()) 
       {
         System.out.println(enemy.getName() + " has been defeated.");
+        break;
       }
     }
     return player.getHP();
-  }
-  
+  }  
   
   private void playerAttack()
   {
@@ -88,6 +101,7 @@ public class Combat {
       dmgToEnemy = defenseCalc(player.getAttack(), enemy.getDefense());
       enemy.takeDamage(dmgToEnemy);
     }
+    System.out.println(player.getName() + "'s attack is " + player.getAttack() + ". After factoring enemy defense, the damage dealt is " + dmgToEnemy + ".");
     System.out.println("\n" + player.getName() + " deals " + dmgToEnemy + " damage to " + enemy.getName());
   }
   
@@ -95,6 +109,7 @@ public class Combat {
   {
     int dmgToPlayer = defenseCalc(enemy.getAttack(), player.getDefense());
     player.takeDamage(dmgToPlayer);
+    System.out.println(enemy.getName() + "'s attack is " + enemy.getAttack() + ". After factoring enemy defense, the damage dealt is " + dmgToPlayer + ".");
     System.out.println("\n" + enemy.getName() + " deals " + dmgToPlayer + " damage to " + player.getName());
   }
   
