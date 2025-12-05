@@ -1,50 +1,145 @@
-Slime,6,1,1,Forest|Grasslands
-Mummy,10,2,2,Desert
-Wolf,8,2,1,Forest|Grasslands|Taiga
-Boar,9,2,1,Forest|Grasslands|Farmland
-Bandit,10,3,1,Forest|Grasslands|Farmland|Badlands
-Wild Dog,7,2,1,Desert|Badlands
-Treant Sapling,12,3,3,Forest
-Moss Spider,9,2,1,Forest|Swamp
-Goblin Skirmisher,10,3,2,Forest|Jungle
-Forest Lynx,11,3,2,Forest|Taiga
-Wisp,7,4,0,Forest|Crystal Forest
-Enchanted Hare,5,1,5,Forest|Crystal Forest
-Sand Imp,8,2,0,Desert|Badlands
-Scorpion,7,3,1,Desert
-Sand Wraith,14,4,3,Desert
-Carrion Bird,8,2,2,Desert|Badlands
-Dust Devil Spirit,12,4,2,Desert|Badlands
-Bonewalker,12,3,2,Desert|Badlands
-Bog Lurker,12,3,2,Swamp
-Leech Swarm,10,2,0,Swamp
-Rotting Husk,12,2,3,Swamp
-Vine Beast,15,3,2,Swamp|Jungle
-Jungle Panther,14,4,2,Jungle
-Stone Idol Guard,16,5,3,Jungle|Crystal Forest
-Poison Frog,6,3,0,Swamp|Jungle
-Field Wolf,9,2,1,Grasslands|Farmland
-Rogue Farmer,10,3,1,Farmland
-Stampede Bull,14,4,1,Grasslands|Farmland
-Traveling Thief,11,3,2,Grasslands|Farmland|Capital City
-Wind Sprite,7,4,0,Grasslands
-Snow Fox,8,2,1,Taiga
-Frozen Shade,12,4,2,Taiga
-Ice Wraith,15,5,2,Taiga
-Mountain Goat,10,2,1,Mountains
-Stone Guardian,18,5,4,Mountains
-Cliff Talon,12,4,2,Mountains
-Yeti,22,6,4,Mountains
-Cave Bat,7,2,0,Cave
-Crystal Spider,14,3,3,Cave|Crystal Forest
-Glowshroom Horror,12,4,2,Cave
-Burrowing Wyrm,18,6,2,Cave|Mountains
-Crystal Warden,20,6,4,Crystal Forest|Mountains
-Reflective Shade,15,4,3,Crystal Forest
-Shadow Beast,18,6,3,Forest|Swamp|Jungle
-Dire Wolf,14,4,2,Grasslands|Taiga|Mountains
-Feral Knight,16,5,3,Forest|Capital City|Village
-Crystal Horror,20,7,3,Crystal Forest|Cave|Mountains
-Ancient Wraith,24,8,2,Swamp|Desert|Taiga
+BIOME,Forest,20,3
+REGION,Forest,Forest Outskirts,true
+REGION,Forest,Forest Center,false
+REGION,Forest,Clearing,false
+REGION,Forest,Logged Area,false
+REGION,Forest,Old Cabin,false
+REGION,Forest,Bushy Area,false
 
-Dragon,500,50,100,Ancient Dungeon
+BIOME,Desert,30,1
+REGION,Desert,Desert Outskirts,true
+REGION,Desert,Endless Sands,false
+REGION,Desert,Rolling Dunes,false
+REGION,Desert,Old Caravan Path,false
+REGION,Desert,Desert Peaks,false
+REGION,Desert,Oasis,false
+
+BIOME,Badlands,30,3
+REGION,Badlands,Cracked Valley,true
+REGION,Badlands,Red Mesa,false
+REGION,Badlands,Desolate Flats,false
+
+BIOME,Swamp,40,4
+REGION,Swamp,Swamp Outskirts,true
+REGION,Swamp,Swamp Pond,false
+REGION,Swamp,Viney Area,false
+REGION,Swamp,Rotting Marsh,false
+REGION,Swamp,Foggy Ponds,false
+
+BIOME,Jungle,70,8
+REGION,Jungle,Thick Brush,true
+REGION,Jungle,Overgrown Ruins,false
+REGION,Jungle,Hanging Vines,false
+REGION,Jungle,Deep Wilds,false
+
+BIOME,Grasslands,10,1
+REGION,Grasslands,Grassland Outskirts,true
+REGION,Grasslands,Rolling Steppe,false
+REGION,Grasslands,Small Grove,false
+REGION,Grasslands,Camp,false
+REGION,Grasslands,Windmill Fields,false
+
+BIOME,Farmland,0,0
+REGION,Farmland,Rolling Fields,true
+REGION,Farmland,Barn District,false
+
+BIOME,Mountains,60,6
+REGION,Mountains,Mountain Pass,true
+REGION,Mountains,Stone Ridge,false
+REGION,Mountains,Gorge,false
+REGION,Mountains,Peak Trail,false
+REGION,Mountains,Mountain Peak,false
+
+BIOME,Cave,50,6
+REGION,Cave,Entrance,true
+REGION,Cave,Crystal Chamber,false
+REGION,Cave,Underground Lake,false
+REGION,Cave,Collapsed Tunnels,false
+REGION,Cave,Glowshroom Grotto,false
+REGION,Cave,Depths,false
+
+BIOME,Taiga,40,3
+REGION,Taiga,Taiga Outskirts,true
+REGION,Taiga,Frozen Grove,false
+REGION,Taiga,Icy Clearing,false
+
+BIOME,Crystal Forest,30,3
+REGION,Crystal Forest,Reflective Path,true
+REGION,Crystal Forest,Crystal Lake,false
+REGION,Crystal Forest,Glittering Grove,false
+
+BIOME,Capital City,0,0
+REGION,Capital City,City Gate,true
+REGION,Capital City,City Street,false
+REGION,Capital City,City Square,false
+
+BIOME,Ancient Dungeon,80,8
+REGION,Ancient Dungeon,Dungeon Entrance,true
+REGION,Ancient Dungeon,Ancient Chamber,false
+
+BIOME,Village,0,0
+REGION,Village,Village,true
+
+CONNECT,Forest Outskirts,Forest Center|Clearing|Logged Area|Swamp Outskirts|Grassland Outskirts|Village
+CONNECT,Village,Forest Outskirts|Clearing|Logged Area|Forest Center
+CONNECT,Forest Center,Forest Outskirts|Clearing|Logged Area|Village
+CONNECT,Clearing,Forest Outskirts|Village|Forest Center|Logged Area
+CONNECT,Logged Area,Forest Outskirts|Forest Center|Clearing|Old Cabin|Bushy Area
+CONNECT,Old Cabin,Logged Area|Bushy Area|Clearing
+CONNECT,Bushy Area,Old Cabin|Logged Area|Forest Center
+
+CONNECT,Swamp Outskirts,Swamp Pond|Viney Area|Forest Outskirts|Grassland Outskirts
+CONNECT,Swamp Pond,Swamp Outskirts|Viney Area|Foggy Ponds
+CONNECT,Viney Area,Swamp Outskirts|Swamp Pond|Rotting Marsh
+CONNECT,Rotting Marsh,Viney Area|Swamp Outskirts
+CONNECT,Foggy Ponds,Swamp Pond
+
+CONNECT,Grassland Outskirts,Forest Outskirts|Swamp Outskirts|Desert Outskirts|Rolling Fields|Windmill Fields
+CONNECT,Rolling Steppe,Grassland Outskirts|Small Grove
+CONNECT,Small Grove,Rolling Steppe|Camp
+CONNECT,Camp,Rolling Steppe|Small Grove|Windmill Fields
+CONNECT,Windmill Fields,Grassland Outskirts|Camp
+
+CONNECT,Desert Outskirts,Grassland Outskirts|Cracked Valley|Endless Sands
+CONNECT,Endless Sands,Desert Outskirts|Rolling Dunes|Old Caravan Path
+CONNECT,Rolling Dunes,Endless Sands|Old Caravan Path|Desert Peaks
+CONNECT,Old Caravan Path,Endless Sands|Oasis|Desolate Flats|Cracked Valley
+CONNECT,Desert Peaks,Rolling Dunes|Mountain Pass
+CONNECT,Oasis,Old Caravan Path
+
+CONNECT,Cracked Valley,Desert Outskirts|Old Caravan Path|Red Mesa|Desolate Flats
+CONNECT,Red Mesa,Cracked Valley|Desolate Flats
+CONNECT,Desolate Flats,Cracked Valley|Red Mesa|Old Caravan Path
+
+CONNECT,Thick Brush,Swamp Outskirts|Overgrown Ruins|Hanging Vines
+CONNECT,Overgrown Ruins,Thick Brush|Hanging Vines|Deep Wilds
+CONNECT,Hanging Vines,Thick Brush|Overgrown Ruins|Deep Wilds
+CONNECT,Deep Wilds,Overgrown Ruins|Hanging Vines|Foggy Ponds
+
+CONNECT,Taiga Outskirts,Frozen Grove|Icy Clearing|Deep Wilds|Mountain Pass
+CONNECT,Frozen Grove,Taiga Outskirts|Icy Clearing|Deep Wilds
+CONNECT,Icy Clearing,Taiga Outskirts|Frozen Grove|Crystal Lake
+
+CONNECT,Reflective Path,Frozen Grove|Crystal Lake|Glittering Grove|City Gate
+CONNECT,Crystal Lake,Reflective Path|Icy Clearing
+CONNECT,Glittering Grove,Reflective Path
+
+CONNECT,Mountain Pass,Desert Outskirts|Stone Ridge|Gorge|Taiga Outskirts
+CONNECT,Stone Ridge,Mountain Pass|Gorge
+CONNECT,Gorge,Mountain Pass|Stone Ridge|Peak Trail|Entrance
+CONNECT,Peak Trail,Gorge|Mountain Peak
+CONNECT,Mountain Peak,Peak Trail
+
+CONNECT,Entrance,Gorge|Crystal Chamber|Collapsed Tunnels
+CONNECT,Crystal Chamber,Entrance|Underground Lake|Glowshroom Grotto
+CONNECT,Underground Lake,Crystal Chamber|Depths
+CONNECT,Collapsed Tunnels,Entrance|Depths
+CONNECT,Glowshroom Grotto,Crystal Chamber|Depths
+CONNECT,Depths,Glowshroom Grotto|Underground Lake|Collapsed Tunnels
+
+CONNECT,Rolling Fields,Grassland Outskirts|Barn District|Windmill Fields
+CONNECT,Barn District,Rolling Fields|Windmill Fields
+
+CONNECT,City Gate,Reflective Path|City Street|Rolling Fields
+CONNECT,City Street,City Gate|City Square
+CONNECT,City Square,City Street
