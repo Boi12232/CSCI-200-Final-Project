@@ -264,7 +264,7 @@ public class RPGGame
       //Check if an item is encountered
       if (rnd.nextInt(100) < 20)
       {
-        System.out.println("You found a " + currentLocation.getBiome().getItems());
+        //System.out.println("You found a " + currentLocation.getBiome().getItems());
       }
       
       //Check if an enemy is encountered and begin combat
