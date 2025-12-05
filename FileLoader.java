@@ -88,7 +88,7 @@ public class FileLoader
     }
   }
   
-  public static void loadItems(String filename, Map<String, Biome> biomes, List<Item> allItems) throws IOException 
+  public static void loadItems(String filenamem List<Item> allItems) throws IOException 
   {
     try (BufferedReader br = new BufferedReader(new FileReader(filename))) 
     {
