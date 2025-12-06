@@ -1,111 +1,56 @@
-/*
- * Name: Shamin Fazal
- * Date: 4/10/25
- * Description: Story class for the game
- */
-
-public class Enemy
+  public class Enemy 
 {
-  //Attributes
-  private String name;
-  private int health;
-  private int attack;
-  private int defense;
-  
-  /**
-   * Constructor for an enemy
-   * @param name the enemy name
-   * @param health the enemy health
-   * @param attack the enemy attack
-   * @param defense the enemy defense
-   */
-  public Enemy(String name, int health, int attack, int defense)
-  {
-    this.name = name;
-    this.health = health;
-    this.attack = attack;
-    this.defense = defense;
-  }
-  
-  /**
-   * Constructor to copy an enemy for combat
-   * @param other enemy w/ other keyword
-   */
-  public Enemy(Enemy other)
-  {
-    this.name = other.name;
-    this.health = other.health;
-    this.attack = other.attack;
-    this.defense = other.defense;
-  }
-  
-  //Getters for the values
-  /**
-   * Returns enemy name
-   * @return enemy name
-   */
-  public String getName()
-  {
-    return name;
-  }
-  /**
-   * Returns enemy health
-   * @return enemy health
-   */
-  public int getHealth()
-  {
-    return health;
-  }
-  /**
-   * Returns enemy attack
-   * @return enemy attack
-   */
-  public int getAttack()
-  {
-    return attack;
-  }
-  /**
-   * Returns enemy defense
-   * @return enemy defense
-   */
-  public int getDefense()
-  {
-    return defense;
-  }
-  
-  //Setters for the values
-  /**
-   * Sets enemy health
-   * @param health the value to be set to
-   */
-  public void setHealth(int health)
-  {
-    this.health = health;
-  }
-  /**
-   * Sets enemy attack
-   * @param attack the value to be set to
-   */
-  public void setAttack(int attack)
-  {
-    this.attack = attack;
-  }
-  /**
-   * Sets enemy defense
-   * @param defense the value to be set to
-   */
-  public void setDefense(int defense)
-  {
-    this.defense = defense;
-  }
-  
-  //ToString
-  /**
-   * Prints out string of enemy stats
-   * @return the enemy stat string
-   */
-  public String toString()
-  {
-    return name + "\n----------" + "\nHealth: " + health + "\nAttack: " + attack + "\nDefense: " + defense;
-  }
+    private final String name;
+    private int health;
+    private int attack;
+    private int defense;
+
+    public Enemy(String name, int health, int attack, int defense) 
+    {
+        this.name = name;
+        this.health = health;
+        this.attack = attack;
+        this.defense = defense;
+    }
+
+    public String getName() 
+    { 
+      return name; 
+    }
+    
+    public int getHealth() 
+    { 
+      return health; 
+    }
+    
+    public int getAttack() 
+    { 
+      return attack; 
+    }
+    
+    public int getDefense() 
+    {
+      return defense; 
+    }
+
+    public boolean isAlive()
+    {
+      return health > 0;
+    }
+    
+    public Enemy duplicate()
+    {
+      return new Enemy(this.name, this.health, this.attack, this.defense);
+    }
+    
+    public void takeDamage(int dmg)
+    {
+      health -= dmg;
+      if (health > 0) health = 0;
+    }
+    @Override
+    public String toString() 
+    { 
+      return name; 
+    }
 }
