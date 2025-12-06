@@ -1,99 +1,194 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public class RPGGame 
 {
-  //Attribues
-  private Graph<Location> worldGraph;
-  private Map<String, Location> locations = new HashMap<>();
-  private Map<String,Location> shelterLocations = new HashMap<>();
-  private Map<Location, List<String>> pendingNeighbors = new HashMap<>();
-  private Location currentLocation;
-  private Scanner scanner = new Scanner(System.in);
-  //private ErrorMessages errorMessages = new ErrorMessages();
+  private final Graph<BiomeRegion> worldGraph = new Graph<>(false);
+  private final Map<String, Biome> biomes = new HashMap<>();
+  private final Map<String, BiomeRegion> regions = new HashMap<>();
+  private Map<String,BiomeRegion> shelterLocations = new HashMap<>();
+  private final Map<String, ArrayList<String>> pendingConnections = new HashMap<>();
+  private final ErrorMessages errorMessages = new ErrorMessages();
+  private final Random rnd = new Random();
+  private final Scanner scanner = new Scanner(System.in);
+  private List<Enemy> enemies = new ArrayList<>();
+  private List<Item> items = new ArrayList<>();
+  private List<String> messages;
+  private BiomeRegion currentLocation;
+  private Inventory inventory = new Inventory();
+  private Player player;
+  private int playerHP;
+  private boolean dfs = false;
+  private boolean bfs = false; 
+  private boolean dkj = false;
   
-  public RPGGame() 
+  public RPGGame(String biomeFile, String enemyFile, String itemFile) 
   {
-    //creates an undirected graph for our program
-    worldGraph = new Graph<>(false);
-    initializeWorldFromFile("locations.txt");
-    initializeEnemiesFromFile("enemies.txt");
-    //location starts at the Villiage
-    currentLocation = locations.get("Village");
-  }
-  
-  /**
-   * This method takes in a file containing all the possible Locations, parses it, and initializes it to the worldGraph
-   * @param filename represents the file name holding the Locations and its properties
-   * 
-   */
-  private void initializeWorldFromFile(String filename) 
-  {
-    try (BufferedReader br = new BufferedReader(new FileReader(filename))) 
+    initializeWorldFromFile(biomeFile, enemyFile, itemFile);
+    
+    System.out.println("Enter name: ");
+    String name = scanner.nextLine();
+    
+    
+    
+    //Create Player Object and initialize HP
+    this.player = new Player(name, 100, 5, 5);
+    this.playerHP = player.getHP();
+    
+    //Start at Village
+    currentLocation = regions.get("Village");
+    //Fallback if Village breaks
+    if (currentLocation == null) 
     {
-      String line;
-      // -------- PASS 1: create locations --------
-      // 35-42 for every line, splits the file by commas and removes possible whitespace
-      while ((line = br.readLine()) != null) 
-      {
-        String[] data = line.split(",");
-        if (data.length < 5) continue;
-        String name = data[0].trim();
-        int encounterChance = Integer.parseInt(data[1].trim());
-        int fleeInfluence = Integer.parseInt(data[2].trim());
-        String description = data[3].trim();
-        
-        //creates a new location with the first 3 indicies of the line and adds it to the worldGraph and locations
-        Location loc = new Location(name, encounterChance, fleeInfluence, description);
-        
-        locations.put(name, loc); //holds all locations that we can reference to
-        worldGraph.addVertex(loc);
-        
-        
-        //For the next indicies of the line, starting at index 4, the neighbors of the Locations are put in its own array and mapped according to the current Location
-        List<String> neighborNames = new ArrayList<>();
-        for (int i = 4; i < data.length; i++) 
-        {
-          neighborNames.add(data[i].trim());
-        }
-        pendingNeighbors.put(loc, neighborNames); //by the end of it, pending neighbors would have a map of every location and where it connects to 
-      }
-      //System.out.println(pendingNeighbors);
+      System.out.println("Village region not found! Starting at first available region.");
+      currentLocation = regions.values().stream().findFirst().orElse(null);
+    }
+    
+    //Load invalid input messages
+    try 
+    {
+      messages = ErrorMessages.loadMessages();
     } 
     catch (IOException e) 
     {
-      System.out.println("Error reading the file: " + e.getMessage());
+      System.out.println("Could not load error messages: " + e.getMessage());
+      messages = new ArrayList<>();
+      messages.add("Invalid input. Try again!"); //Fallback
+    }
+  }
+  
+  
+  /**
+   * This method Initializes biomes, enemies, and items
+   * @param
+   * @param
+   * @param
+   */
+  private void initializeWorldFromFile(String biomeFile, String enemyFile, String itemFile) 
+  {
+    FileLoader.WorldData data;
+    
+    //Loads Biomes
+    try 
+    {
+      data = FileLoader.loadWorld(biomeFile);
+    } 
+    catch (IOException e) 
+    {
+      System.out.println("Error reading world file: " + e.getMessage());
+      return;
     }
     
-    // -------- PASS 2: connect edges --------
+    //After biome is loaded in, initialize respective arrays with all the biomes,regions, and connections within the text file.
+    this.biomes.putAll(data.biomes);
+    this.regions.putAll(data.regions);
+    this.pendingConnections.putAll(data.pendingConnections);
     
-    //for each entry in pending neighbor, get its key (The location its connected to)
-    //and for each of the key's values (being its neighbors), get its neighbors and make and edge for the two with a calculated difficulty
-    for (Map.Entry<Location, List<String>> entry : pendingNeighbors.entrySet())
+    //Add vertices to world graph
+    for (BiomeRegion region : regions.values()) {
+      worldGraph.addVertex(region);
+    }
+    
+    //Load enemies
+    try 
     {
-      Location loc = entry.getKey();
-      for (String neighborName : entry.getValue()) 
+      FileLoader.loadEnemies(enemyFile, biomes, enemies); //load enemies, including references to all biomes and enemies maps
+    } 
+    catch (IOException e) 
+    {
+      System.out.println("Error loading enemies: " + e.getMessage());
+    }
+    
+    //Load items
+    try 
+    {
+      FileLoader.loadItems(itemFile, items);
+    } 
+    catch (IOException e) 
+    {
+      System.out.println("Error loading items: " + e.getMessage());
+    }
+    
+    //Connect internal regions within each biome
+    connectInternalRegions();
+    
+    //Connect external outskirts based on pendingConnections
+    connectExternalOutskirts();
+  }
+  
+  private void connectInternalRegions() 
+  {
+    for (Biome biome : biomes.values()) 
+    {
+      List<BiomeRegion> list = biome.getRegions();
+      if (list.size() <= 1) continue;
+      
+      //Chain connection
+      for (int i = 0; i < list.size() - 1; i++) 
       {
-        Location neighbor = locations.get(neighborName);
-        if (neighbor != null) 
+        BiomeRegion a = list.get(i);
+        BiomeRegion b = list.get(i + 1);
+        if (!worldGraph.edgeExists(a, b)) 
         {
-          double difficulty = calculateDifficulty(loc, neighbor);
-          worldGraph.addEdge(loc, neighbor, difficulty);
+          worldGraph.addEdge(a, b, calculateWeight(biome));
+        }
+      }
+      
+      //Add random extra edges
+      int extra = Math.max(0, list.size() / 2);
+      for (int i = 0; i < extra; i++) 
+      {
+        BiomeRegion a = list.get(rnd.nextInt(list.size()));
+        BiomeRegion b = list.get(rnd.nextInt(list.size()));
+        if (!a.equals(b) && !worldGraph.edgeExists(a, b)) 
+        {
+          worldGraph.addEdge(a, b, calculateWeight(biome));
         }
       }
     }
   }
   
-  /**
-   * This method takes a location, and return all its neighbors through its edges.
-   * @param loc represents the location we want to find the neighbors of
-   * @return List<Location> : a list of all connected locations.
-   */
-  private List<Location> getNeighborLocations(Location loc) 
+  private void connectExternalOutskirts() 
   {
-    List<Location> result = new ArrayList<>();
-    //gets a set of edges, and for each edge, add the Locations its connected to into result and return
-    for (Graph<Location>.Edge e : worldGraph.getNeighbors(loc)) 
+    for (Map.Entry<String, ArrayList<String>> entry : pendingConnections.entrySet()) 
+    {
+      BiomeRegion from = regions.get(entry.getKey());
+      if (from == null) continue;
+      
+      for (String toName : entry.getValue()) 
+      {
+        BiomeRegion to = regions.get(toName);
+        if (to == null) continue;
+        
+        if (!worldGraph.edgeExists(from, to)) 
+        {
+          double weight = calculateWeight(from.getBiome(), to.getBiome());
+          worldGraph.addEdge(from, to, weight);
+        }
+      }
+    }
+  }
+  
+  private double calculateWeight(Biome biome) 
+  {
+    double base = biome.getEncounterChance();
+    return Math.min(9.9, (base / 100.0) * 8.0 + rnd.nextDouble() * 2.0);
+  }
+  
+  /**
+   * Calculates the weight given 
+   * 
+   */
+  private double calculateWeight(Biome a, Biome b) 
+  {
+    double avg = (a.getEncounterChance() + b.getEncounterChance()) / 2.0;
+    return Math.min(9.9, (avg / 100.0) * 8.0 + rnd.nextDouble() * 2.0);
+  }
+  
+  private List<BiomeRegion> getNeighbors(BiomeRegion loc) 
+  {
+    List<BiomeRegion> result = new ArrayList<>();
+    for (Graph<BiomeRegion>.Edge e : worldGraph.getNeighbors(loc)) 
     {
       result.add(e.destination);
     }
@@ -101,226 +196,369 @@ public class RPGGame
   }
   
   /**
-   * Method to calculate the difficulty between two nodes to assign as edge weight
-   * @param from represents the start of the edge
-   * @param to represents the biome at the end of the edge
-   * 
-   */
-  private double calculateDifficulty(Location from, Location to) 
-  {
-    //For now, return a random difficulty between 0 and 10
-    return Math.floor(Math.random() * 10);
-  }
-  
-  
-  /**
-   * Parses through a file of enemies and initializes them in a cooresponding Location
-   * @name represents the name of the file containing the enemies
-   */
-  private void initializeEnemiesFromFile(String name){
-    try{
-      File file = new File(name);
-      Scanner enemiesFile = new Scanner(file);
-      
-      while(enemiesFile.hasNextLine()){
-        String line = enemiesFile.nextLine();
-        String[] info = line.split(",");
-        
-        Enemy createEnemy = new Enemy(info[0].toString().trim(),Integer.parseInt(info[1].trim()),Integer.parseInt(info[2].trim()),Integer.parseInt(info[3].trim()));
-        
-        //System.out.print(createEnemy);
-        
-        for(int i = 4; i < info.length; i++){
-          Location biome = locations.get(info[i].trim());
-          biome.enemies.add(createEnemy);
-          //System.out.print(biome.enemies);
-        }
-        
-        
-      }
-      enemiesFile.close();
-    }
-    catch(FileNotFoundException e){
-      System.out.print("invalid file");
-    }
-  }
-  
-  /**
    * This method allows the user to add a new location node into the Graph
    * @param name is a string that represents the name of the location that will be created (maybe types? but idk)
    */
-  private void addLocation(String name)
+  private void addLocation()
   {
+    System.out.println("What will be the new location name?");
+    String shelterName = scanner.next();
     
     if(shelterLocations.size() < 2){
-      if(locations.containsKey(name)){
+      
+      if(biomes.containsKey(shelterName)){
         System.out.println("This location already exists! Please Rename");
-        name = scanner.nextLine();
+        shelterName = scanner.nextLine();
       }
       
-      Location loc = new Location(name);
-      locations.put(name, loc);
-      shelterLocations.put(name,loc);
-      pendingNeighbors.get(currentLocation).add(name); //gets the array in current location and adds newly made shelter as a neighbor of currentLocation
+      BiomeRegion loc = new BiomeRegion(shelterName,biomes.get("Village"),false);
+      //System.out.println(loc);
+      shelterLocations.put(shelterName,loc);
+      biomes.get("Village").getRegions().add(loc);
+      
+      
+      List<String> currentGraphConns = pendingConnections.get(currentLocation.getName()); //gets the array in current location and adds newly made shelter as a neighbor of currentLocation
+      currentGraphConns.add(shelterName);
+      worldGraph.addVertex(loc);
       worldGraph.addEdge(loc,currentLocation,1);
     }
     else
     {
       System.out.println("You've reached the max number of locations!");
+      return;
       
     }
   }
   
-  /**
-   * This method removes a location from the graph and all its references
-   * @param name represents the location desired to be removed
-   * 
-   */
-  private void removeLocation(String name)
+  private int beginCombat() 
   {
-    Location removedLocation = locations.get(name); //references to removed location object
-    System.out.println(removedLocation.getName());
-    if(removedLocation == currentLocation){
-      List<Location> neighborsOfRemoved = getNeighborLocations(removedLocation);
-      currentLocation = neighborsOfRemoved.get(1);
-    }
-    
-    if(shelterLocations.containsKey(name))
+    List<Enemy> biomeEnemies = currentLocation.getBiome().getEnemies();
+    if (biomeEnemies.isEmpty()) 
     {
-      shelterLocations.remove(name);
+      System.out.println("No enemies found in this region.");
+      return playerHP;
     }
     
-    locations.remove(name);
-    pendingNeighbors.remove(name);
-    worldGraph.removeVertex(locations.get(name));
+    int randomInt = rnd.nextInt(biomeEnemies.size());
+    Enemy enemy = biomeEnemies.get(randomInt);
+    biomeEnemies.remove(randomInt);
+    biomeEnemies.add(enemy.duplicate()); //Removes Enemy and adds it back into respective array
     
+    System.out.println("\nA wild " + enemy.getName() + " appears!");
     
-    for(Map.Entry<Location,List<String>> setOfKeysAndNeighbors: pendingNeighbors.entrySet()){ //creates a set of pendingNeighbors map. For each element in the set, grab the neighbors and remove reference to removedLocation
-      List<String> neighborsList = setOfKeysAndNeighbors.getValue();
-      Location key = setOfKeysAndNeighbors.getKey();
-      
-      if(neighborsList.contains(name))
-      { 
-        //System.out.println("1. " + neighborsList);
-        worldGraph.removeEdge(key, locations.get(name));
-        neighborsList.remove(name);
-        //System.out.println("2. " +neighborsList);
-      }
-    }
+    Combat combat = new Combat(player, enemy, currentLocation, inventory);
+    playerHP = combat.startBattle();
     
-    //System.out.println("3. " + pendingNeighbors);
+    if (playerHP <= 0) 
+    {
+      System.out.println("\nGame Over! " + player.getName() + " has fallen in battle.");
+    } 
+    
+    return playerHP;
   }
   
-  /**
-   * This method switches the current location to a neighboring location based on the user's choice.
-   */
-  private void switchingBiomes(){
-    
-    System.out.println("Possible paths:");
-    
-    List<Location> neighbors = getNeighborLocations(currentLocation);
-    
-    for (int i = 0; i < neighbors.size(); i++) 
-    {
-      System.out.println((i + 1) + ". " + neighbors.get(i).getName());
-    }
-    
-    System.out.print("Choose destination (number): ");
-    
-    int choice = 0;
-    
-    while(choice < 1 || choice > neighbors.size()) 
-    {
-      System.out.println("Invalid choice.");
-      choice = scanner.nextInt();
-      
-    }
-    
-    currentLocation = neighbors.get(choice - 1);
-    System.out.println("Traveling to " + currentLocation.getName() + "...");
-    
-  }
-  
-  
-  
-  /**
-   * Game loop
-   * Starts the game loop, always starting user at the "village" biome and providing the possible paths of the biome based on its avaliable edges.
-   */
-  public void startGame()
+  public void startGame() throws InterruptedException 
   {
-    Stats playerStats = new Stats(10, 30, 3, 3, 50);
-    MovementEvents playerEvents = new MovementEvents(playerStats,currentLocation);
-    while (true) 
+    if (currentLocation == null) 
     {
-      System.out.println("\nYou are at: " + currentLocation.getName() + ". Go Off and Explore!!!");
-      
-      String direction = scanner.next().toLowerCase();
-      
-      //System.out.println(direction);
-      
-      if(direction.equals("admin"))
-      {
-        System.out.println("What admin command do you want to execute?");
-        String command = scanner.next();
+      System.out.println("No starting location defined!");
+      return;
+    }
+    
+    System.out.println("You begin in your humble " + currentLocation.getName() + " again, for a third time destined to explore the world.");
+    System.out.println("What a sense of deja vu...");
+    
+    while (playerHP > 0) 
+    {
+      if(dfs == false && bfs == false && dkj == false){
+        //Show current location, connected nodes, and allow for player input
+        System.out.println("\nYou are in: " + currentLocation);
+        List<BiomeRegion> neighbors = getNeighbors(currentLocation);
         
-        switch(command){
-          
-          case "printGraph": //prints worldGraph
-            worldGraph.printGraph();
-            break;
+        System.out.println("Possible paths:");
+        for (int i = 0; i < neighbors.size(); i++) 
+        {
+          System.out.println((i + 1) + ". " + neighbors.get(i).getName());
+        }
+        
+        System.out.println(neighbors.size() + 1 + ". Other Options");
+        
+        System.out.print("Choose destination: ");
+        int choice;
+        
+        try 
+        {
+          choice = Integer.parseInt(scanner.nextLine().trim());
+          if (choice < -2 || choice > neighbors.size() + 1) 
+          {
+            System.out.println(ErrorMessages.getRandomMessage(messages));
+            continue;
+          }
+          else if (choice == -1)
+          {
+            System.out.println("DEBUG MODE: Instantiating instance of combat.");
+            playerHP = beginCombat();
+            continue;
+          }
+          else if (choice == -2)
+          {
+            System.out.println("DEBUG MODE: Setting health to 0.");
+            playerHP = 0;
+            continue;
+          }
+        } 
+        catch (NumberFormatException ex) 
+        {
+          System.out.println(ErrorMessages.getRandomMessage(messages));
+          continue;
+        }
+        
+        if(choice -1 == neighbors.size()){
+          int choice2;
+          System.out.println("Choose which other option you'd like? \n 1. DFS Through entire graph \n 2. BFS to the nearest Safe Zone \n 3. DKJ to \n 4. Add shelter \n 5. Go Back");
+          try 
+          {
             
-          case "removeLocation": //removes specified location
-            System.out.println("Which location do you want to remove?");
-            String userInput = "";
-            while(!locations.containsKey(userInput)){
-              userInput = scanner.next();
+            choice2 = Integer.parseInt(scanner.nextLine().trim());
+            if (choice2 < 1 || choice2 > 5) 
+            {
+              System.out.println(ErrorMessages.getRandomMessage(messages));
+              continue;
             }
-            removeLocation(userInput);
-            
-            break;
-            
-          case "addLocation": //adds location at current node
-            System.out.println("What will be the new location name?");
-            addLocation(scanner.next());
-            break;
-            
-          case "teleport":
-            currentLocation = locations.get(scanner.next());
-            break;
-            
-          case "getLocations": 
-            System.out.println(locations);
-            break;
-            
-          case "getNeighbors": 
-            System.out.println(getNeighborLocations(currentLocation));
-            
-          default: 
-            System.out.println("invalid input. No such command exists");
-            break;
+          }
+          catch(NumberFormatException ex) 
+          {
+            System.out.println(ErrorMessages.getRandomMessage(messages));
+            continue;
+          }
+          
+          if(choice2 == 1){ // DFS option
+            dfs = true;
+            bfs = false; 
+            dkj = false;
+          }
+          else if(choice2 == 2){ //BFS option
+            dfs = false;
+            bfs = true; 
+            dkj = false;
+          }
+          else if(choice2 == 3){ //DKJ option
+            dfs = false;
+            bfs = false; 
+            dkj = true;
+          }
+          else if(choice2 == 4){
+            addLocation();
+            //debugPrintWorld();
+          }
+          else if(choice2 == 5){
+          System.out.println("Going back");
+          Thread.sleep(300);
+          }
+        }
+        else
+        {
+        currentLocation = neighbors.get(choice - 1);
+        System.out.print("\nTraveling to " + currentLocation.getName() + ".");
+        Thread.sleep(500);
+        System.out.print(".");
+        Thread.sleep(500);
+        System.out.print(".");
+        System.out.println();
+        }
+        
+        //Check if an item is encountered
+        if (rnd.nextInt(100) < 20)
+        {
+          System.out.println("You found a " + currentLocation.getBiome().getItems());
+          System.out.println("Not completely done yet");
+        }
+        
+        //Check if an enemy is encountered and begin combat
+        if (rnd.nextInt(100) < currentLocation.getBiome().getEncounterChance()) 
+        {
+          playerHP = beginCombat();
+        } 
+        else 
+        {
+          continue;
         }
       }
-      else
-      {
-        if(direction.equals("r") || direction.equals("right")){
-          System.out.println("You turned right!");
+      else if(dfs == true){ //dfs will run through the entire program
+        int choice = 0;
+        System.out.println("DFS");
+        List<BiomeRegion> list = worldGraph.traverseEntireGraph(currentLocation);
+        list.remove(0);
+        System.out.println(list);
+        for(BiomeRegion biome: list){
+          currentLocation = biome;
+          System.out.print("\nTraveling to " + currentLocation.getName() + ".");
+          Thread.sleep(500);
+          System.out.print(".");
+          Thread.sleep(500);
+          System.out.print(".");
+          System.out.println();
+          
+          //Check if an item is encountered
+          if (rnd.nextInt(100) < 20)
+          {
+            System.out.println("You found a " + currentLocation.getBiome().getItems());
+          }
+          
+          //Check if an enemy is encountered and begin combat
+          if (rnd.nextInt(100) < currentLocation.getBiome().getEncounterChance()) 
+          {
+            playerHP = beginCombat();
+          }
+          
+           if (rnd.nextInt(100) < 50) 
+          {
+            System.out.println("The weights for all saftey node has been increased...It will not be more difficult to reach it using Traversals");
+            int size = biomes.get("Village").getRegions().size();
+            BiomeRegion randomBiomeHeavy = biomes.get("Village").getRegions().get(rnd.nextInt(size));
+            worldGraph.updateWeights(randomBiomeHeavy);
+          } 
+          
+          System.out.println("Would you like to stay at " +  currentLocation.getName() + "? \n 1.Yes \n 2.No");
+          choice = scanner.nextInt();
+          try 
+          {
+            while(choice < 1 || choice > 2){
+              choice = Integer.parseInt(scanner.nextLine().trim());
+              System.out.println(ErrorMessages.getRandomMessage(messages));
+              continue;
+            }
+          }
+          catch(NumberFormatException ex) 
+          {
+            System.out.println(ErrorMessages.getRandomMessage(messages));
+            continue;
+          }
+          
+          if(choice == 1){
+            dfs = false;
+            break;
+          }
+          else{
+            continue;
+          }
         }
-        else if(direction.equals("l") || direction.equals("left")){
-          System.out.println("You turned left!");
+        dfs = false;
+      }
+      else if(bfs == true){
+        
+        //bfs will traverse to the closest shelter route
+        List<BiomeRegion> list = worldGraph.traverseFrom(currentLocation);
+        System.out.println(list);
+        for(BiomeRegion biome: list){
+          currentLocation = biome;
+          System.out.print("\nTraveling to " + currentLocation.getName() + ".");
+          Thread.sleep(500);
+          System.out.print(".");
+          Thread.sleep(500);
+          System.out.print(".");
+          System.out.println();
+          
+          //Check if an item is encountered
+          if (rnd.nextInt(100) < 20)
+          {
+            System.out.println("You found a " + currentLocation.getBiome().getItems());
+          }
+          
+          //Check if an enemy is encountered and begin combat
+          if (rnd.nextInt(100) < currentLocation.getBiome().getEncounterChance()) 
+          {
+            playerHP = beginCombat();
+          }
+          
+           if (rnd.nextInt(100) < 50) 
+          {
+            System.out.println("The weights for all saftey node has been increased...It will not be more difficult to reach it using Traversals");
+            int size = biomes.get("Village").getRegions().size();
+            BiomeRegion randomBiomeHeavy = biomes.get("Village").getRegions().get(rnd.nextInt(size));
+            worldGraph.updateWeights(randomBiomeHeavy);
+          } 
         }
-        else{
-          System.out.println("Invalid input");
+        
+        bfs = false;
+      }
+      else if(dkj == true){
+        //dkj goes to a desired node by traversing only through the safest nodes
+      
+        System.out.println("Which Location do you want to traverse to?");
+        
+        Set<String> keysString = regions.keySet();
+        ArrayList<String> keysArray = new ArrayList<String>();
+        int counting = 0;
+        for(String keyName: keysString){
+        System.out.println( (counting + 1) + ". " + keyName);
+        keysArray.add(keyName);
+        counting ++;
         }
         
+        int choice = scanner.nextInt();
         
+        try 
+        {
+          while(choice < 1 || choice > keysString.size()){
+            choice = Integer.parseInt(scanner.nextLine().trim());
+            System.out.println(ErrorMessages.getRandomMessage(messages));
+            continue;
+          }
+        }
+        catch(NumberFormatException ex) 
+        {
+          System.out.println(ErrorMessages.getRandomMessage(messages));
+          continue;
+        }
         
-        playerStats.toString();
+        List<BiomeRegion> dkjList = worldGraph.traverseUsingLeast(currentLocation,regions.get(keysArray.get(choice-1)));
+        dkjList.remove(0);
+        System.out.println(dkjList);
         
-        //switchingBiomes();
-        
-        
+        for(BiomeRegion biome: dkjList){
+          currentLocation = biome;
+          System.out.print("\nTraveling to " + currentLocation.getName() + ".");
+          Thread.sleep(500);
+          System.out.print(".");
+          Thread.sleep(500);
+          System.out.print(".");
+          System.out.println();
+          
+          //Check if an item is encountered
+          if (rnd.nextInt(100) < 20)
+          {
+            System.out.println("You found a " + currentLocation.getBiome().getItems());
+          }
+          
+          //Check if an enemy is encountered and begin combat
+          if (rnd.nextInt(100) < currentLocation.getBiome().getEncounterChance()) 
+          {
+            playerHP = beginCombat();
+          } 
+          
+          if (rnd.nextInt(100) < 50) 
+          {
+            System.out.println("The weights for all saftey node has been increased...It will not be more difficult to reach it using Traversals");
+            int size = biomes.get("Village").getRegions().size();
+            BiomeRegion randomBiomeHeavy = biomes.get("Village").getRegions().get(rnd.nextInt(size));
+            worldGraph.updateWeights(randomBiomeHeavy);
+          } 
+        }
+        dkj = false;
       }
     }
+    
+    System.out.println("\nGame over.");
+    System.out.println("Exiting game...");
+    Thread.sleep(2500);
+    System.exit(0);
+  }
+  
+  //Debug helper
+  public void debugPrintWorld() 
+  {
+    System.out.println("WORLD GRAPH:");
+    worldGraph.printGraph();
   }
 }
