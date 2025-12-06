@@ -1,0 +1,51 @@
+ENEMY
+
+Slime,6,1,1,Forest|Plains|
+Mummy,10,2,2,Desert
+
+Wolf,8,2,1,Forest|Grasslands|Taiga
+Boar,9,2,1,Forest|Grasslands|Farmland
+Bandit,10,3,1,Forest|Grasslands|Farmland|Badlands
+Wild Dog,7,2,1,Desert|Badlands
+Treant Sapling,12,3,3,Forest
+Moss Spider,9,2,1,Forest|Swamp
+Goblin Skirmisher,10,3,2,Forest|Jungle
+Forest Lynx,11,3,2,Forest|Taiga
+Wisp,7,4,0,Forest|Crystal Forest
+Enchanted Hare,5,1,5,Forest|Crystal Forest
+Sand Imp,8,2,0,Desert|Badlands
+Scorpion,7,3,1,Desert
+Sand Wraith,14,4,3,Desert
+Carrion Bird,8,2,2,Desert|Badlands
+Dust Devil Spirit,12,4,2,Desert|Badlands
+Bonewalker,12,3,2,Desert|Badlands
+Bog Lurker,12,3,2,Swamp
+Leech Swarm,10,2,0,Swamp
+Rotting Husk,12,2,3,Swamp
+Vine Beast,15,3,2,Swamp|Jungle
+Jungle Panther,14,4,2,Jungle
+Stone Idol Guard,16,5,3,Jungle|Crystal Forest
+Poison Frog,6,3,0,Swamp|Jungle
+Field Wolf,9,2,1,Grasslands|Farmland
+Rogue Farmer,10,3,1,Farmland
+Stampede Bull,14,4,1,Grasslands|Farmland
+Traveling Thief,11,3,2,Grasslands|Farmland|Capital City
+Wind Sprite,7,4,0,Grasslands
+Snow Fox,8,2,1,Taiga
+Frozen Shade,12,4,2,Taiga
+Ice Wraith,15,5,2,Taiga
+Mountain Goat,10,2,1,Mountains
+Stone Guardian,18,5,4,Mountains
+Cliff Talon,12,4,2,Mountains
+Yeti,22,6,4,Mountains
+Cave Bat,7,2,0,Cave
+Crystal Spider,14,3,3,Cave|Crystal Forest
+Glowshroom Horror,12,4,2,Cave
+Burrowing Wyrm,18,6,2,Cave|Mountains
+Crystal Warden,20,6,4,Crystal Forest|Mountains
+Reflective Shade,15,4,3,Crystal Forest
+Shadow Beast,18,6,3,Forest|Swamp|Jungle
+Dire Wolf,14,4,2,Grasslands|Taiga|Mountains
+Feral Knight,16,5,3,Forest|Capital City|Village
+Crystal Horror,20,7,3,Crystal Forest|Cave|Mountains
+Ancient Wraith,24,8,2,Swamp|Desert|Taiga
