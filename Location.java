@@ -2,12 +2,20 @@ import java.util.*;
 
 public class Location 
 {
+  /**
+   * Attributes
+   */
   private String name;
   private int encounterChance;
   private int fleeInfluence;
   private String description;
   private Biome biome;
   
+  /**
+   * Constructer 
+   * @param name 
+   * @param 
+   */
   public Location(String name, int encounterChance, int fleeInfluence, String description, Biome biome) 
   {
     this.name = name;
