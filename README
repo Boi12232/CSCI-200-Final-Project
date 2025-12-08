@@ -1,9 +1,12 @@
 This is an RPG game made entirely on Java utilizing a graph implementation using maps to form a world and allow the user to explore, fight, and discover what is within.
 
 All files needed to run the game from start are included in this repository.
+The driver that contains main() is CSCI_200_Final_Project.java
+All .txt files (enemies.txt, invalidinputmessages.txt, items.txt, and locations.txt) are necessary for the program to run.
+
 INSTRUCTIONS:
 1. Download all files from this repository.
 2. If zipped, unzip into the desired folder.
 3. Within your desired IDE, open all .java files.
 4. Navigate to the "CSCI_200_Final_Project.java" class and compile if needed.
-5. Press run. The game should start on its own. 
+5. Press run. The game should begin with allowing the user to input a name before allowing the user to begin traversing.  
