@@ -1,3 +1,6 @@
+Health Potion,40,HEALTH
+Attack Potion,20,ATTACK
+Defense Potion,20,DEFENSE
 Small Health Potion,10,HEALTH
 Medium Health Potion,25,HEALTH
 Greater Health Potion,50,HEALTH
@@ -43,3 +46,7 @@ Bulwark Flask,28,DEFENSE
 Calcified Shard,40,DEFENSE
 Turtle Shell Tonic,22,DEFENSE
 Titan Essence,50,DEFENSE
+
+
+
+God Potion,50,25,25,HEALTH|ATTACK|DEFENSE
