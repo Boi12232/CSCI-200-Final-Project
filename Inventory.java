@@ -1,12 +1,21 @@
+/**
+ * Shamin
+ * Inventory class: creates and contains the methods of the inventory Object. Holds the items.
+ * 12/7/2025
+ */
 import java.util.*;
 
 public class Inventory 
 {
+  /**
+   * Attributes
+   */
   private final List<Item> items = new ArrayList<>();
   private final Scanner input = new Scanner(System.in);
   
   /** 
-   * Add item to inventory
+   * Adds items to inventory
+   * @param item represents the item to be added
    */
   public void addItem(Item item) 
   {
@@ -15,7 +24,9 @@ public class Inventory
   }
   
   /** 
-   * Show inventory & allow usage
+   * Show inventory and allow usage
+   * 
+   * @param player represents the player stats we want to reference
    */
   public void showInventory(Player player) 
   {
