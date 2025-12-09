@@ -1,10 +1,15 @@
 /**
  * Author: Shamin Fazal
  * Credit: Colton Hern for original Combat class (CSCI 160 Project Spring 2025)
+ * 
+ * Combat class: creates and contains the Combat system
  */
 
 import java.util.*;
 
+/**
+ * Attributes
+ */
 public class Combat {
   private final Player player;
   private final Enemy enemy;
@@ -13,6 +18,14 @@ public class Combat {
   private final Scanner input = new Scanner(System.in);
   private final Random rnd = new Random();
   
+  
+  /**
+   * Constructor 
+   * @param player represents the player's stats
+   * @param enemy represents the Enemey and its stats
+   * @param region represents the current region the user is in, or the combat is set
+   * @param inventory represents the player's inventory
+   */
   public Combat(Player player, Enemy enemy, BiomeRegion region, Inventory inventory) 
   {
     this.player = player;
@@ -29,65 +42,55 @@ public class Combat {
   {
     System.out.println("Battle starts!\n" + player.getName() + " vs " + enemy.getName());
     
-    while (player.isAlive() && enemy.isAlive()) 
+    while (player.isAlive() && enemy.isAlive())
     {
-      System.out.println(enemy.getName() + ": " + enemy.getHealth() + " HP");
-      System.out.println(player.getName() + ": " + player.getHP() + " HP");
-      
       System.out.println("\nChoose action: \n1. Attack\n2. Flee\n3. Inventory");
       String action = input.nextLine();
-      boolean turnConsumed = false; //Track if player used a turn
+      boolean playerAttacked = false;
       
       switch (action) 
       {
         case "1":
           playerAttack();
-          turnConsumed = true;
+          playerAttacked = true;
           break;
-          
         case "2":
           if (flee()) 
-        {
-          return player.getHP(); //Successful flee ends combat
-        } 
-          else 
-          {
-            System.out.println("You wasted your turn trying to flee!");
-            turnConsumed = true; //Failed flee consumes a turn
-          }
-          break;
-          
+          return player.getHP();
+          else
+            break;
         case "3":
           System.out.println("\nAccessing inventory...");
-          inventory.showInventory(player); //Inventory usage doesn't consume turn
-          continue; //Retry action selection
-          
+          inventory.showInventory(player);
+          continue;
         default:
           System.out.println("Invalid option.");
-          continue; //Retry action selection
+          continue;
       }
       
-      //Only enemy attacks if the player consumed a turn
-      if (turnConsumed && enemy.isAlive()) 
+      // Enemy performs a turn
+      if (enemy.isAlive())
       {
         enemyAttack();
       }
       
       //Win/Loss Check
-      if (!player.isAlive()) 
+      if (!player.isAlive())
       {
         System.out.println(player.getName() + " has been defeated.");
-        break;
-      } 
-      else if (!enemy.isAlive()) 
+      }
+      else if (!enemy.isAlive())
       {
         System.out.println(enemy.getName() + " has been defeated.");
-        break;
       }
     }
     return player.getHP();
-  }  
+  }
   
+  
+  /**
+   * Calculats the player's attack damage for this round and removes it from Enemy's health
+   */
   private void playerAttack()
   {
     int dmgToEnemy;
@@ -101,18 +104,23 @@ public class Combat {
       dmgToEnemy = defenseCalc(player.getAttack(), enemy.getDefense());
       enemy.takeDamage(dmgToEnemy);
     }
-    System.out.println(player.getName() + "'s attack is " + player.getAttack() + ". After factoring enemy defense, the damage dealt is " + dmgToEnemy + ".");
     System.out.println("\n" + player.getName() + " deals " + dmgToEnemy + " damage to " + enemy.getName());
   }
   
+    /**
+   * Calculats the enemy's attack damage for this round and removes it from player's health
+   */
   private void enemyAttack()
   {
     int dmgToPlayer = defenseCalc(enemy.getAttack(), player.getDefense());
     player.takeDamage(dmgToPlayer);
-    System.out.println(enemy.getName() + "'s attack is " + enemy.getAttack() + ". After factoring enemy defense, the damage dealt is " + dmgToPlayer + ".");
     System.out.println("\n" + enemy.getName() + " deals " + dmgToPlayer + " damage to " + player.getName());
   }
   
+  /**
+   * Determines through a 1/20 chance if the user's attack is doubled or not.
+   * @return boolean true if the user rolled a 20; else false
+   */
   private boolean criticalChance()
   {
     boolean crit = false;
@@ -121,6 +129,10 @@ public class Combat {
     return crit;
   }
   
+  /**
+   * Determines if the user successfully fled or not based on random chance. Each Biome has a different flee influence that makes it earier or harder to flee from an enemy.
+   * @return boolean true if the random roll is less than the Biome's flee influence, else false.
+   */
   private boolean flee() 
   {
     int fleeRoll = rnd.nextInt(10) + 1;
