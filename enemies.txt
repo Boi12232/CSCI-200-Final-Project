@@ -1,5 +1,8 @@
-Slime,6,1,1,Forest|Grasslands
+ENEMY
+
+Slime,6,1,1,Forest|Plains|
 Mummy,10,2,2,Desert
+
 Wolf,8,2,1,Forest|Grasslands|Taiga
 Boar,9,2,1,Forest|Grasslands|Farmland
 Bandit,10,3,1,Forest|Grasslands|Farmland|Badlands
@@ -46,5 +49,3 @@ Dire Wolf,14,4,2,Grasslands|Taiga|Mountains
 Feral Knight,16,5,3,Forest|Capital City|Village
 Crystal Horror,20,7,3,Crystal Forest|Cave|Mountains
 Ancient Wraith,24,8,2,Swamp|Desert|Taiga
-
-Dragon,500,50,100,Ancient Dungeon
